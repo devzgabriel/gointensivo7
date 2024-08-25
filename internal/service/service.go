@@ -26,6 +26,7 @@ func NewBookService(db *sql.DB) *BookService {
 }
 
 // CreateBook cria um novo livro no banco de dados.
+// TODO: Entender o que acontece se não passar o ponteiro de book
 func (s *BookService) CreateBook(book *Book) error {
 	query := "INSERT INTO books (title, author, genre) VALUES (?, ?, ?)"
 	result, err := s.db.Exec(query, book.Title, book.Author, book.Genre)
@@ -69,6 +70,8 @@ func (s *BookService) GetBookByID(id int) (*Book, error) {
 	row := s.db.QueryRow(query, id)
 
 	var book Book
+	// TODO: Entender o que acontece se não houver nenhuma linha
+	// TODO: Entender o que acontece se não passar & antes de book.ID
 	if err := row.Scan(&book.ID, &book.Title, &book.Author, &book.Genre); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -132,6 +135,7 @@ func (s *BookService) SimulateMultipleReadings(bookIDs []int, duration time.Dura
 
 	// Lança as goroutines para simular a leitura.
 	for _, id := range bookIDs {
+		// TODO: Entender o que acontece se só passar go s.SimulateReading(id, duration, results)
 		go func(bookID int) {
 			s.SimulateReading(bookID, duration, results)
 		}(id)
